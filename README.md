@@ -36,7 +36,7 @@ Let's check the example file:
     Nik,      2,---,      1,      1,     
     Murdoch,  1,  2,    ---,      1,     
     William,  2,  1,       ,    ---,    1
-    Cliff,     ,   ,      1,      1,     
+    Cliff,     ,   ,      1,      1,  ---
 
 
 The givers are in the rows, i.e. Sam has given a gift to Nik once and to Murdoch twice.
