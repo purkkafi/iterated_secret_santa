@@ -14,11 +14,11 @@ For example, you can randomize a round using the example file with
 
 printing a result such as
 
-``Sam -> Cliff
-Nik -> Murdoch
-Murdoch -> William
-William -> Nik
-Cliff -> Sam``
+    Sam -> Cliff
+    Nik -> Murdoch
+    Murdoch -> William
+    William -> Nik
+    Cliff -> Sam
 
 which indicates that Sam should give a gift to Cliff, Nik to Murdoch and so on.
 
