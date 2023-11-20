@@ -76,9 +76,10 @@ def derangements(S):
             if k == 0 and I[k] == 0:
                 break
 
-if len(sys.argv) != 3:
-    print('Arguments: [gift_data] [present]')
+if len(sys.argv) != 4:
+    print('Arguments: [gift_data] [avoid_pairs] [present]')
     print('[gift_data]: .csv file with gift data (see example)')
+    print('[avoid_pairs]: file containing non-preferred (giver, reciever) pairs (see example)')
     print('[present]: comma-separated list of people present for this round')
     exit()
 
@@ -117,7 +118,7 @@ with open(sys.argv[1]) as csvfile:
             gifts[giver][reciever] = int(times)
 
 # List of who is present from argument
-present = sys.argv[2].split(',')
+present = sys.argv[3].split(',')
 
 # Generate list of people not present
 not_present = list(names)
@@ -133,6 +134,21 @@ for np in not_present:
 for p in present:
     for np in not_present:
         del gifts[p][np] # gifts to people not present
+
+# (giver, reciever) pairs as names to avoid, if possible
+avoid_pairs = set()
+
+with open(sys.argv[2]) as avoid_file:
+    for line in avoid_file.readlines():
+        giver, reciever = [ name.strip() for name in line.split('->') ]
+        
+        if giver not in present:
+            raise ValueError(f'{giver} listed in avoid pairs but not present')
+        
+        if reciever not in present:
+            raise ValueError(f'{reciever} listed in avoid pairs but not present')
+        
+        avoid_pairs.add((giver, reciever))
 
 # Returns the value of a derangement where present[n] is giving a gift to dr[n]
 # Lower is better
@@ -181,8 +197,33 @@ for i,d in enumerate(derangements(present)):
         good_drs.append(list(d)) # Copy the list, see derangements(S)
         lowest_val = val
 
-# Choose one of the best ones
-chosen = random.choice(good_drs)
+# Assuming present[n] is giving a gift to dr[n],
+# returns how many (giver, reciever) pairs are in the avoid list
+def avoided_pairs(dr):
+    acc = 0
+    for i in range(len(dr)):
+        pair = (present[i], dr[i])
+        if pair in avoid_pairs:
+            acc = acc+1
+    return acc
+
+# Filter based on avoid pairs
+filtered_drs = []
+least_avoid_pairs = 1000000000000000
+
+for dr in good_drs:
+    score = avoided_pairs(dr)
+    
+    if score > least_avoid_pairs:
+        continue
+    elif score == least_avoid_pairs:
+        filtered_drs.append(list(dr))
+    else:
+        filtered_drs = []
+        filtered_drs.append(list(dr))
+        least_avoid_pairs = score
+
+chosen = random.choice(filtered_drs)
 
 # Write results to stdout
 result = []
